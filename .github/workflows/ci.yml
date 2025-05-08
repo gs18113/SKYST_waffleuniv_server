@@ -21,7 +21,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up MySQL
-      run: docker compose -f docker-compose-db.yml up -d
+      run: docker compose -f docker-compose-db.yaml up -d
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
