@@ -3,32 +3,42 @@ name: CI Pipeline
 on:
   push:
     branches:
-      -
+      - 'feat/*'
+      - 'fix/*'
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Set up MySQL
+      run: docker compose -f docker-compose.yml up -d
+
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
-    # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
+    - name: Lint Check
+      run: ./gradlew ktlintCheck
+
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-    - name: Build with Gradle Wrapper
-      run: ./gradlew build
+    - name: Build with Gradle
+      run:
+#        export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+#        export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        ./gradlew build
 
   dependency-submission:
 
