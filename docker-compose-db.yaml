@@ -6,8 +6,6 @@ services:
     container_name: mysql-db
     ports:
       - "3306:3306"
-    volumes:
-      - db-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root_password  # Change as needed
       MYSQL_DATABASE: testdb
