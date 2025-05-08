@@ -1,0 +1,40 @@
+name: CI Pipeline  # 워크플로우 이름
+
+on:
+  push:
+    branches:
+      - 'feat/*'  # feat/* 브랜치에 push 시 실행
+  pull_request:
+    branches:
+      - main  # main 브랜치로 PR 생성 시 실행
+
+jobs:
+  build-and-test:  # Job 이름
+    runs-on: ubuntu-latest  # 작업 실행 환경
+
+#    env:
+#      # GitHub Secrets 주입
+#      CLOUDFRONT_PRIVATE_KEY: ${{ secrets.CLF_PRIVATE_KEY }}
+#      CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLF_KEY_PAIR_ID }}
+
+    steps:
+      - name: Checkout code  # Step 이름
+        uses: actions/checkout@v4  # GitHub Action 사용 (코드 체크아웃)
+
+      - name: Setup MySQL
+        run: docker compose -f docker-compose-db.yaml up -d
+
+      - name: Set up Eclipse Temurin JDK 17  # Eclipse Temurin JDK 설정
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Lint Check  # 린트 체크 실행
+        run: ./gradlew ktlintCheck
+
+      - name: Build with Gradle  # Gradle 빌드 실행
+        run: |
+#          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+#          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ./gradlew build

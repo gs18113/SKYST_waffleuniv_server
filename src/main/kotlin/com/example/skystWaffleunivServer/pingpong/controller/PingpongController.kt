@@ -1,4 +1,4 @@
-package com.example.skyst_waffleuniv_server.pingpong.controller
+package com.example.skystWaffleunivServer.pingpong.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/pingpong")
-@Tag(name="Pingpong controller", description = "Pingpong controller API")
+@Tag(name = "Pingpong controller", description = "Pingpong controller API")
 class PingpongController(
     // private val pingpongService: PingpongService
 ) {
