@@ -2,7 +2,8 @@ version: '3.8'
 
 services:
   app:
-    container_name: dongledonut/skyst2025waffleuniv
+    container_name: spring-app
+    image: dongledonut/skyst2025waffleuniv
     ports:
       - "8080:8080"
     depends_on:
