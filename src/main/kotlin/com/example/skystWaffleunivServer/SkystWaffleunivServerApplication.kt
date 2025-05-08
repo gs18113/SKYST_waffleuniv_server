@@ -1,4 +1,4 @@
-package com.example.skyst_waffleuniv_server
+package com.example.skystWaffleunivServer
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
