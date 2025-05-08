@@ -17,6 +17,7 @@ services:
     ports:
       - "3306:3306"
     environment:
+    # TODO: these values should be moved to a separate file
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: testdb
       MYSQL_USER: user
@@ -25,6 +26,11 @@ services:
       - db-data:/var/lib/mysql
     networks:
       - spring-mysql-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "user", "-p$$MYSQL_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   spring-mysql-network:
