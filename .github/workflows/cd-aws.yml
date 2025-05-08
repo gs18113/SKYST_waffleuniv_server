@@ -86,5 +86,5 @@ jobs:
             echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
             docker rm -f $(docker ps -qa)
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}
-            docker-compose -f docker-compose-server.yaml up -d
+            docker compose -f docker-compose-server.yaml up -d
             docker image prune -f
