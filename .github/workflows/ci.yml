@@ -37,6 +37,11 @@ jobs:
         chmod +x ./gradlew
         ./gradlew ktlintCheck
 
+    # 민감한 정보(ex. DB url, username, password) 는 따로 github secrets에 저장
+    - name: Set up application.yaml
+      run: |
+        echo "${{ secrets.APPLICATION_DEV }}" > ./src/main/resources/application-dev.yaml
+
     - name: Build with Gradle
       run: |
         chmod +x ./gradlew

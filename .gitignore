@@ -38,3 +38,6 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### Secret files ###
+src/main/resources/application-dev.yaml
