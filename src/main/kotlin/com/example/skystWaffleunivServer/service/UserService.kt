@@ -144,6 +144,23 @@ class UserService(
     }
 
     @Transactional
+    fun getRoomInfo(userId: Long): RoomAssignment {
+        val user =
+            userRepository.findById(userId)
+                .orElseThrow { IllegalArgumentException("User not found: $userId") }
+
+        val room = user.currentRoom ?: throw DomainException(400, HttpStatus.BAD_REQUEST, "User is not in a room")
+
+        return RoomAssignment(
+            roomId = room.id!!,
+            userCount = room.userCount,
+            songCount = room.songCount,
+            currentSongVideoId = room.currentSong?.videoId,
+            currentSongStartedAt = room.currentSongStartedAt,
+        )
+    }
+
+    @Transactional
     fun leaveRoom(userId: Long) {
         val user =
             userRepository.findById(userId)

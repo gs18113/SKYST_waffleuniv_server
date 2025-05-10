@@ -92,6 +92,23 @@ class UserController(
         )
     }
 
+    // get room info
+    @GetMapping("/room")
+    fun getRoomInfo(
+        @AuthenticationPrincipal userId: Long,
+    ): ResponseEntity<JoinRoomResponseDto> {
+        val assignment = userService.getRoomInfo(userId)
+        return ResponseEntity.ok(
+            JoinRoomResponseDto(
+                roomId = assignment.roomId,
+                userCount = assignment.userCount,
+                songCount = assignment.songCount,
+                currentSongVideoId = assignment.currentSongVideoId,
+                currentSongStartedAt = assignment.currentSongStartedAt,
+            ),
+        )
+    }
+
     // 5) 방 퇴장
     @PostMapping("/leave-room")
     fun leaveRoom(
