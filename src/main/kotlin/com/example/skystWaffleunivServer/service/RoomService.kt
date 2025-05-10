@@ -1,9 +1,11 @@
 package com.example.skystWaffleunivServer.service
 
-import com.example.skystWaffleunivServer.domain.EmotionLabelEntity
+
+import com.example.skystWaffleunivServer.controller.RoomCreateDto
 import com.example.skystWaffleunivServer.domain.RoomEntity
 import com.example.skystWaffleunivServer.dto.RoomDto
 import com.example.skystWaffleunivServer.dto.SongRequestDto
+import com.example.skystWaffleunivServer.repository.EmotionLabelRepository
 import com.example.skystWaffleunivServer.repository.RoomRepository
 import com.example.skystWaffleunivServer.repository.SongRequestRepository
 import com.example.skystWaffleunivServer.repository.UserRepository
@@ -21,6 +23,7 @@ import java.util.concurrent.ScheduledFuture
 @EnableScheduling
 class RoomService(
     private val userRepository: UserRepository,
+    private val emotionLabelRepository: EmotionLabelRepository,
     private val messagingTemplate: SimpMessagingTemplate,
     private val roomRepository: RoomRepository,
     private val songRequestRepository: SongRequestRepository,
@@ -38,17 +41,18 @@ class RoomService(
     }
 
     fun createRoom(
-        roomName: String,
-        label: EmotionLabelEntity,
-    ): RoomDto {
-        return RoomDto.fromEntity(
-            roomRepository.save(
-                RoomEntity(
-                    roomName = roomName,
-                    label = label,
-                ),
-            ),
+        userId: Long,
+        dto: RoomCreateDto
+    ): RoomEntity {
+        val label = emotionLabelRepository.findByName(dto.emotionLabel)
+            ?: throw Exception("Emotion label not found")
+
+        val room = RoomEntity(
+            roomName = dto.roomName,
+            label = label
         )
+
+        return room
     }
 
     fun addSongToRoom(

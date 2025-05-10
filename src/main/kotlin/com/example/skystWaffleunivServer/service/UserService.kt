@@ -45,6 +45,7 @@ class UserService(
 
         user.recordContent = content
         val aiResult = aiService.analyzeEmotion(content)
+        // aiResult -> labelId, lableName, comment
         val labelEntity =
             emotionLabelRepository.findById(aiResult.labelId)
                 .orElseThrow { IllegalArgumentException("Label not found: ${aiResult.labelId}") }
