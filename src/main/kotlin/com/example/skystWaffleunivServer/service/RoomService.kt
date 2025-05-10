@@ -1,6 +1,7 @@
 package com.example.skystWaffleunivServer.service
 
 import com.example.skystWaffleunivServer.domain.SongRequestEntity
+import com.example.skystWaffleunivServer.dto.ReactionDto
 import com.example.skystWaffleunivServer.dto.RoomDto
 import com.example.skystWaffleunivServer.dto.SongPlayDto
 import com.example.skystWaffleunivServer.dto.SongRequestDto
@@ -50,6 +51,20 @@ class RoomService(
     fun findRoomById(roomId: Long): RoomDto {
         return roomRepository.findByIdOrNull(roomId)?.let { RoomDto.fromEntity(it) }
             ?: throw Exception("Room not found")
+    }
+
+    fun addReaction(
+        roomId: Long,
+        reactionDto: ReactionDto,
+    ) {
+        roomRepository.findByIdOrNull(roomId) ?: throw Exception("Room not found")
+        messagingTemplate.convertAndSend(
+            "/topic/room/$roomId",
+            mapOf(
+                "action" to "REACTION",
+                "content" to reactionDto.name,
+            ),
+        )
     }
 
     @Transactional

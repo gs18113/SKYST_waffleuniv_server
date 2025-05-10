@@ -57,6 +57,42 @@
             }
         }
 
+        function sendHeart() {
+            const token = document.getElementById("token").value;
+            if (stompClient && stompClient.connected) {
+                // Create headers object with Authorization
+                const headers = {
+                    "Authorization": "Bearer " + token, // Function to get your auth token
+                    "Content-Type": "application/json"
+                };
+
+                // Send to your application endpoint with headers
+                stompClient.send("/app/room/1/reaction", headers, JSON.stringify({
+                    name: "heart",
+                }));
+            } else {
+                alert("STOMP is not connected.");
+            }
+        }
+
+        function sendThumbsup() {
+            const token = document.getElementById("token").value;
+            if (stompClient && stompClient.connected) {
+                // Create headers object with Authorization
+                const headers = {
+                    "Authorization": "Bearer " + token, // Function to get your auth token
+                    "Content-Type": "application/json"
+                };
+
+                // Send to your application endpoint with headers
+                stompClient.send("/app/room/1/reaction", headers, JSON.stringify({
+                    name: "thumb",
+                }));
+            } else {
+                alert("STOMP is not connected.");
+            }
+        }
+
         function closeWebSocket() {
             if (stompClient) {
                 stompClient.disconnect();
@@ -81,6 +117,10 @@
 <label for="token">token:</label>
 <input type="text" id="token" placeholder="Type your token here">
 <button onclick="sendMessage()">Send</button>
+
+<button onclick="sendHeart()">Send heart</button>
+<button onclick="sendThumbsup()">Send thumbsup</button>
+
 
 <h2>Close Connection</h2>
 <button onclick="closeWebSocket()">Close WebSocket</button>

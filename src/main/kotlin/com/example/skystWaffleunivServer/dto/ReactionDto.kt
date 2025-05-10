@@ -1,11 +1,8 @@
 package com.example.skystWaffleunivServer.dto
 
-import com.example.skystWaffleunivServer.domain.ReactionEntity
-
-class ReactionDto() {
-    companion object {
-        fun fromEntity(entity: ReactionEntity): ReactionDto {
-            return ReactionDto()
-        }
-    }
+class ReactionDto(
+    val name: String,
+) {
+    // Add a no-args constructor for Jackson
+    constructor() : this("")
 }
