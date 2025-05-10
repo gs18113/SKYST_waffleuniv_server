@@ -4,9 +4,9 @@ import com.example.skystWaffleunivServer.service.EmotionLabelService
 import com.example.skystWaffleunivServer.service.ReactionService
 import com.example.skystWaffleunivServer.service.RoomService
 import com.example.skystWaffleunivServer.service.SongRequestService
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/rooms")
@@ -14,7 +14,7 @@ class RoomController(
     private val roomService: RoomService,
     private val songRequestService: SongRequestService,
     private val reactionService: ReactionService,
-    private val emotionLabelService: EmotionLabelService
+    private val emotionLabelService: EmotionLabelService,
 ) {
     /**
      * 전체 방 목록 조회
@@ -30,7 +30,7 @@ class RoomController(
      */
     @GetMapping("/{roomId}")
     fun getRoom(
-        @PathVariable roomId: Long
+        @PathVariable roomId: Long,
     ): ResponseEntity<LpBarRoomDto> {
         val room = roomService.findRoomById(roomId)
         return ResponseEntity.ok(room)
@@ -43,7 +43,7 @@ class RoomController(
     @PostMapping("/{roomId}/join")
     fun joinRoom(
         @PathVariable roomId: Long,
-        principal: Principal
+        principal: Principal,
     ): ResponseEntity<Unit> {
         val userId = userService.findUserIdByPrincipal(principal)
         roomService.joinRoom(roomId, userId)
@@ -56,7 +56,7 @@ class RoomController(
     @PostMapping("/{roomId}/leave")
     fun leaveRoom(
         @PathVariable roomId: Long,
-        principal: Principal
+        principal: Principal,
     ): ResponseEntity<Unit> {
         val userId = userService.findUserIdByPrincipal(principal)
         roomService.leaveRoom(roomId, userId)
@@ -69,11 +69,10 @@ class RoomController(
     @GetMapping("/{roomId}/state")
     fun getRoomState(
         @PathVariable roomId: Long,
-        principal: Principal
+        principal: Principal,
     ): ResponseEntity<RoomStateDto> {
         val userId = userService.findUserIdByPrincipal(principal)
         val state = roomService.getRoomState(roomId, userId)
         return ResponseEntity.ok(state)
     }
-
 }

@@ -47,6 +47,9 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.22")
 
     // youtube
     implementation("com.google.apis:google-api-services-youtube:v3-rev222-1.25.0")
