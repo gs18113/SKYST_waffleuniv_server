@@ -11,6 +11,11 @@ interface SongRequestRepository : JpaRepository<SongRequestEntity, Long> {
 
     fun findAllByRoomIdOrderByRequestedAtAsc(roomId: Long): List<SongRequestEntity>
 
+    fun findAllByRoomIdAndStatusOrderByRequestedAtAsc(
+        roomId: Long,
+        status: String,
+    ): List<SongRequestEntity>
+
     fun existsByUserIdAndStatus(
         userId: Long,
         status: String,

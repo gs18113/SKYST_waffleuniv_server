@@ -115,9 +115,7 @@ class UserService(
                     label = user.label!!,
                 )
             roomRepository.save(room)
-            rooms = roomRepository.findByLabelId(labelId)
-            target = rooms.minByOrNull { it.userCount }
-                ?: throw IllegalStateException("No available rooms")
+            target = room
         }
 
         target.userCount += 1

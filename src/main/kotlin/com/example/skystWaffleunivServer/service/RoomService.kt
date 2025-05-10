@@ -81,6 +81,7 @@ class RoomService(
                 room.songCount++
                 if (room.songCount == 1) {
                     room.currentSong = songRequestEntity
+                    roomRepository.save(room)
                     startPlaylist(roomId)
                 }
                 messagingTemplate.convertAndSend(
@@ -114,6 +115,24 @@ class RoomService(
         currentSong.status = "PLAYING"
         songRequestRepository.save(currentSong)
         roomRepository.save(room)
+
+        val pending =
+            songRequestRepository
+                .findAllByRoomIdAndStatusOrderByRequestedAtAsc(roomId, "REQUESTED")
+                .map { req ->
+                    mapOf(
+                        "user_color" to req.user.colorHex,
+                    )
+                }
+        if (pending.isNotEmpty()) {
+            messagingTemplate.convertAndSend(
+                "/topic/room/$roomId",
+                mapOf(
+                    "action" to "UPD_PENDING_LIST",
+                    "content" to pending,
+                ),
+            )
+        }
 
         // Schedule the next song
         logger.info { room.currentSong!!.duration }
