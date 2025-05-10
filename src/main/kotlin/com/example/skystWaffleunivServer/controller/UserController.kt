@@ -1,13 +1,18 @@
 package com.example.skystWaffleunivServer.controller
 
-import com.example.skystWaffleunivServer.dto.*
+import com.example.skystWaffleunivServer.dto.UserDto
 import com.example.skystWaffleunivServer.repository.UserRepository
 import com.example.skystWaffleunivServer.service.UserService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
 
 @RestController
@@ -16,6 +21,7 @@ class UserController(
     private val userService: UserService,
     private val userRepository: UserRepository,
 ) {
+
     // 1) 최초 프로필 설정: colorHex만 입력, nickname 생성 후 userId 반환
     @PostMapping("/register")
     fun register(
@@ -88,6 +94,7 @@ class UserController(
 
         return ResponseEntity.ok(UserDto.fromEntity(user))
     }
+
 }
 
 // 1) 사용자 생성 요청 DTO

@@ -50,6 +50,8 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.22")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // youtube
     implementation("com.google.apis:google-api-services-youtube:v3-rev222-1.25.0")
