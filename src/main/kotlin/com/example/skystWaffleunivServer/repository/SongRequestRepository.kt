@@ -10,4 +10,9 @@ interface SongRequestRepository : JpaRepository<SongRequestEntity, Long> {
     ): SongRequestEntity?
 
     fun findAllByRoomIdOrderByRequestedAtAsc(roomId: Long): List<SongRequestEntity>
+
+    fun existsByUserIdAndStatus(
+        userId: Long,
+        status: String,
+    ): Boolean
 }

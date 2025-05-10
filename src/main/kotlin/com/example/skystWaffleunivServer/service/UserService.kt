@@ -6,6 +6,7 @@ import com.example.skystWaffleunivServer.repository.EmotionLabelRepository
 import com.example.skystWaffleunivServer.repository.RoomRepository
 import com.example.skystWaffleunivServer.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.lang.IllegalArgumentException
@@ -17,6 +18,7 @@ class UserService(
     private val emotionLabelRepository: EmotionLabelRepository,
     private val roomRepository: RoomRepository,
     private val roomService: RoomService,
+    private val messagingTemplate: SimpMessagingTemplate,
     private val aiService: AiService,
 ) {
     @Transactional
@@ -31,7 +33,6 @@ class UserService(
                 label = null,
                 recordContent = null,
                 currentRoom = null,
-                songRequest = null,
             )
 
         return userRepository.save(user)
@@ -125,6 +126,14 @@ class UserService(
         target.userCount += 1
         roomRepository.save(target)
 
+        messagingTemplate.convertAndSend(
+            "/topic/room/${target.id}",
+            mapOf(
+                "action" to "UPD_USER_COUNT",
+                "content" to target.userCount,
+            ),
+        )
+
         user.currentRoom = target
         userRepository.save(user)
 
@@ -147,6 +156,14 @@ class UserService(
 
         room.userCount -= 1
         roomRepository.save(room)
+
+        messagingTemplate.convertAndSend(
+            "/topic/room/${room.id}",
+            mapOf(
+                "action" to "UPD_USER_COUNT",
+                "content" to room.userCount,
+            ),
+        )
 
         user.currentRoom = null
         userRepository.save(user)

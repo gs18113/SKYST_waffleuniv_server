@@ -8,12 +8,13 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "song_request")
+@Table(
+    name = "song_request",
+)
 class SongRequestEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +24,8 @@ class SongRequestEntity(
     @JoinColumn(name = "room_id", nullable = false)
     var room: RoomEntity,
     // 어떤 사용자가 요청했는지 (각 사용자는 하나의 요청만 가질 수 있음)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     var user: UserEntity,
     @Column(nullable = false)
     var title: String,

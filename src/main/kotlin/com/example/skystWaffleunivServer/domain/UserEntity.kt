@@ -8,7 +8,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToOne
+import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import java.time.LocalDateTime
 
@@ -33,9 +33,9 @@ class UserEntity(
     @JoinColumn(name = "current_room_id")
     var currentRoom: RoomEntity? = null,
     // 노래 요청: 일대일 관계
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_id", unique = true)
-    var songRequest: SongRequestEntity? = null,
+    val songRequests: List<SongRequestEntity> = listOf(),
     @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
 )

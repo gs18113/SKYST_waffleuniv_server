@@ -51,6 +51,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.22")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.1")
 
     // youtube
     implementation("com.google.apis:google-api-services-youtube:v3-rev222-1.25.0")

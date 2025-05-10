@@ -9,16 +9,19 @@ import com.example.skystWaffleunivServer.repository.RoomRepository
 import com.example.skystWaffleunivServer.repository.SongRequestRepository
 import com.example.skystWaffleunivServer.repository.UserRepository
 import com.example.skystWaffleunivServer.youtube.service.YoutubeService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.scheduling.annotation.EnableScheduling
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.DefaultTransactionDefinition
 import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 @Service
 @EnableScheduling
@@ -29,9 +32,14 @@ class RoomService(
     private val roomRepository: RoomRepository,
     private val songRequestRepository: SongRequestRepository,
     private val youtubeService: YoutubeService,
+    private val applicationContext: ApplicationContext,
 ) {
-    private val scheduledTasks = ConcurrentHashMap<Long, ScheduledFuture<*>>()
-    private val taskScheduler = ThreadPoolTaskScheduler().apply { initialize() }
+    // kotlin logger
+    private val logger = KotlinLogging.logger {}
+
+    // Then in your service:
+    @Autowired
+    private lateinit var songPlayerExecutor: ScheduledExecutorService
 
     @Transactional
     fun findAllRooms(): List<RoomDto> {
@@ -50,6 +58,9 @@ class RoomService(
         roomId: Long,
         song: SongRequestDto,
     ) {
+        if (songRequestRepository.existsByUserIdAndStatus(userId, "REQUESTED")) {
+            throw Exception("You already have a song in the queue")
+        }
         youtubeService.getVideIdFromUrl(song.sourceUrl)?.let { videoId ->
             youtubeService.getVideoDuration(videoId).let {
                     duration ->
@@ -68,11 +79,17 @@ class RoomService(
                     )
                 songRequestRepository.save(songRequestEntity)
                 room.songCount++
-                room.currentSong = songRequestEntity
-                roomRepository.save(room)
                 if (room.songCount == 1) {
+                    room.currentSong = songRequestEntity
                     startPlaylist(roomId)
                 }
+                messagingTemplate.convertAndSend(
+                    "/topic/room/$roomId",
+                    mapOf(
+                        "action" to "UPD_SONG_COUNT",
+                        "content" to room.songCount,
+                    ),
+                )
             }
         } ?: throw Exception("Invalid YouTube URL")
     }
@@ -90,43 +107,68 @@ class RoomService(
             "/topic/room/$roomId",
             mapOf(
                 "action" to "PLAY",
-                "song" to SongPlayDto.fromEntity(currentSong),
+                "content" to SongPlayDto.fromEntity(currentSong),
             ),
         )
         room.currentSongStartedAt = LocalDateTime.now()
         currentSong.status = "PLAYING"
         songRequestRepository.save(currentSong)
+        roomRepository.save(room)
 
         // Schedule the next song
+        logger.info { room.currentSong!!.duration }
         val nextSongTime = LocalDateTime.now().plusSeconds(room.currentSong!!.duration + 5)
 
-        // Cancel any existing scheduled tasks for this playlist
-        scheduledTasks[roomId]?.cancel(false)
+        // Use a Runnable instead of trying to get the bean
+        logger.info { "Scheduling next song for room $roomId at $nextSongTime (current time: ${LocalDateTime.now()})" }
 
-        // Schedule the next song broadcast
-        val scheduledTask =
-            taskScheduler.schedule(
-                { playNextSong(roomId) },
-                nextSongTime.toInstant(ZoneOffset.UTC),
-            )
-
-        scheduledTasks[roomId] = scheduledTask
+        val delayInSeconds = room.currentSong!!.duration + 5
+        songPlayerExecutor.schedule(
+            {
+                try {
+                    logger.info { "Executing scheduled song change for room $roomId" }
+                    val transactionManager = applicationContext.getBean(PlatformTransactionManager::class.java)
+                    val status = transactionManager.getTransaction(DefaultTransactionDefinition())
+                    try {
+                        playNextSong(roomId)
+                        transactionManager.commit(status)
+                    } catch (e: Exception) {
+                        transactionManager.rollback(status)
+                        logger.error(e) { "Error playing next song for room $roomId" }
+                    }
+                } catch (e: Exception) {
+                    logger.error(e) { "Uncaught exception in song player executor" }
+                }
+            },
+            delayInSeconds,
+            TimeUnit.SECONDS,
+        )
     }
 
-    private fun playNextSong(roomId: Long) {
+    fun playNextSong(roomId: Long) {
+        logger.info { "playNextSong called" }
         val room = roomRepository.findByIdOrNull(roomId) ?: throw Exception("Room not found")
         val currentSong = room.currentSong ?: throw Exception("No current song to play")
+
         // remove current song from songRequestRepository and
         // set room.currentSong to the next song, which is the SongRequestEntity associated with this room and the oldest requestedAt.
-        songRequestRepository.delete(currentSong)
         room.currentSong = songRequestRepository.findFirstByRoomIdAndStatusOrderByRequestedAtAsc(roomId, "REQUESTED")
-            ?: throw Exception("No next song to play")
         room.songCount--
-
         roomRepository.save(room)
-        playAndScheduleNextSong(roomId)
+        songRequestRepository.delete(currentSong)
+
+        messagingTemplate.convertAndSend(
+            "/topic/room/$roomId",
+            mapOf(
+                "action" to "UPD_SONG_COUNT",
+                "content" to room.songCount,
+            ),
+        )
+
+        if (room.currentSong != null) playAndScheduleNextSong(roomId)
     }
 
+    @Transactional
     fun joinRoom(
         userId: Long,
         roomId: Long,
@@ -139,6 +181,7 @@ class RoomService(
         roomRepository.save(room)
     }
 
+    @Transactional
     fun leaveRoom(
         userId: Long,
         roomId: Long,
