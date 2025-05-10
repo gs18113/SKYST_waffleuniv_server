@@ -1,14 +1,16 @@
 package com.example.skystWaffleunivServer.service
 
-
 import com.example.skystWaffleunivServer.controller.RoomCreateDto
 import com.example.skystWaffleunivServer.domain.RoomEntity
+import com.example.skystWaffleunivServer.domain.SongRequestEntity
 import com.example.skystWaffleunivServer.dto.RoomDto
+import com.example.skystWaffleunivServer.dto.SongPlayDto
 import com.example.skystWaffleunivServer.dto.SongRequestDto
 import com.example.skystWaffleunivServer.repository.EmotionLabelRepository
 import com.example.skystWaffleunivServer.repository.RoomRepository
 import com.example.skystWaffleunivServer.repository.SongRequestRepository
 import com.example.skystWaffleunivServer.repository.UserRepository
+import com.example.skystWaffleunivServer.youtube.service.YoutubeService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -27,6 +29,7 @@ class RoomService(
     private val messagingTemplate: SimpMessagingTemplate,
     private val roomRepository: RoomRepository,
     private val songRequestRepository: SongRequestRepository,
+    private val youtubeService: YoutubeService,
 ) {
     private val scheduledTasks = ConcurrentHashMap<Long, ScheduledFuture<*>>()
     private val taskScheduler = ThreadPoolTaskScheduler().apply { initialize() }
@@ -42,15 +45,17 @@ class RoomService(
 
     fun createRoom(
         userId: Long,
-        dto: RoomCreateDto
+        dto: RoomCreateDto,
     ): RoomEntity {
-        val label = emotionLabelRepository.findByName(dto.emotionLabel)
-            ?: throw Exception("Emotion label not found")
+        val label =
+            emotionLabelRepository.findByName(dto.emotionLabel)
+                ?: throw Exception("Emotion label not found")
 
-        val room = RoomEntity(
-            roomName = dto.roomName,
-            label = label
-        )
+        val room =
+            RoomEntity(
+                roomName = dto.roomName,
+                label = label,
+            )
 
         return room
     }
@@ -60,8 +65,30 @@ class RoomService(
         roomId: Long,
         song: SongRequestDto,
     ) {
-        // TODO
-        // if first song, start the playlist
+        youtubeService.getVideIdFromUrl(song.sourceUrl)?.let { videoId ->
+            youtubeService.getVideoDuration(videoId) .let{
+                    duration ->
+                val room = roomRepository.findByIdOrNull(roomId) ?: throw Exception("Room not found")
+                val user = userRepository.findByIdOrNull(userId) ?: throw Exception("User not found")
+                val songRequestEntity =
+                    SongRequestEntity(
+                        videoId = videoId,
+                        title = song.title,
+                        requestedAt = LocalDateTime.now(),
+                        status = "REQUESTED",
+                        room= room,
+                        user = user,
+                        duration = duration,
+                        artist = song.artist
+                    )
+                room.songCount++
+                room.currentSong = songRequestEntity
+                roomRepository.save(room)
+                if (room.songCount == 1) {
+                    startPlaylist(roomId)
+                }
+            }} ?: throw Exception("Invalid YouTube URL")
+
     }
 
     fun startPlaylist(roomId: Long) {
@@ -77,7 +104,7 @@ class RoomService(
             "/topic/room/$roomId",
             mapOf(
                 "action" to "PLAY",
-                "song" to SongRequestDto.fromEntity(currentSong),
+                "song" to SongPlayDto.fromEntity(currentSong),
             ),
         )
         room.currentSongStartedAt = LocalDateTime.now()

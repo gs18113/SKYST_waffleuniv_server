@@ -30,8 +30,8 @@ class SongRequestEntity(
     var title: String,
     @Column(nullable = false)
     var artist: String,
-    @Column(name = "source_url", nullable = false)
-    var sourceUrl: String,
+    @Column(name = "video_id", nullable = false)
+    var videoId: String,
     @Column(name = "requested_at", nullable = false)
     var requestedAt: LocalDateTime = LocalDateTime.now(),
     @Column(nullable = false)

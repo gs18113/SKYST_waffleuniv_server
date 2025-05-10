@@ -18,29 +18,31 @@ class YoutubeService {
     @Value("\${spring.youtube.api-key}")
     private val apiKey: String = ""
 
-    fun getVideoDuration(videoId: String): String {
-        try {
-            val youtube =
-                YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY) { }
-                    .setApplicationName("video-duration-app")
-                    .setYouTubeRequestInitializer(YouTubeRequestInitializer(apiKey))
-                    .build()
+    fun getVideoDuration(videoId: String): Long {
+        val youtube =
+            YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY) { }
+                .setApplicationName("video-duration-app")
+                .setYouTubeRequestInitializer(YouTubeRequestInitializer(apiKey))
+                .build()
 
-            val videoRequest = youtube.videos().list("contentDetails")
-            videoRequest.key = apiKey
-            videoRequest.id = videoId
+        val videoRequest = youtube.videos().list("contentDetails")
+        videoRequest.key = apiKey
+        videoRequest.id = videoId
 
-            val response = videoRequest.execute()
+        val response = videoRequest.execute()
 
-            if (response.items.isEmpty()) {
-                return "Video not found"
-            }
-
-            // Duration is in ISO 8601 format (e.g., PT1H2M3S for 1 hour, 2 minutes, 3 seconds)
-            return response.items[0].contentDetails.duration
-        } catch (e: Exception) {
-            return "Error: ${e.message}"
+        if (response.items.isEmpty()) {
+            throw Exception("Video not found")
         }
+
+        // Duration is in ISO 8601 format (e.g., PT1H2M3S for 1 hour, 2 minutes, 3 seconds)
+        return convertDurationToSeconds(response.items[0].contentDetails.duration)
+    }
+
+    fun getVideIdFromUrl(url: String): String? {
+        val pattern = "(?<=youtu.be/|watch\\?v=|/videos/|embed\\/|youtu.be\\/|v\\/|e\\/|watch\\?v=|\\?v=|&v=|\\?feature=player_embedded&v=)([^#\\&\\?\\n]*)".toRegex()
+        val matcher = pattern.find(url)
+        return matcher?.groupValues?.getOrNull(1)
     }
 
     // Convert ISO 8601 duration to seconds

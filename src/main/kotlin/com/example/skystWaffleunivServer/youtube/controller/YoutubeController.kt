@@ -19,16 +19,12 @@ class YoutubeController(private val youtubeService: YoutubeService) {
         @PathVariable videoId: String,
     ): ResponseEntity<Map<String, Any>> {
         return try {
-            val isoDuration = youtubeService.getVideoDuration(videoId)
-            val seconds = youtubeService.convertDurationToSeconds(isoDuration)
-            val formatted = youtubeService.formatDuration(isoDuration)
+            val duration = youtubeService.getVideoDuration(videoId)
 
             val response =
                 mapOf(
                     "videoId" to videoId,
-                    "isoDuration" to isoDuration,
-                    "seconds" to seconds,
-                    "formatted" to formatted,
+                    "seconds" to duration,
                 )
 
             ResponseEntity.ok(response)
