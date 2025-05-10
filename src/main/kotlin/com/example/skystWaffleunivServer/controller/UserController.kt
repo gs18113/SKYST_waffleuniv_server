@@ -37,7 +37,7 @@ class UserController(
                     "Set-Cookie",
                     "token=$token",
                 )
-                .body(UserRegisterResponseDto(user.id!!, user.nickname))
+                .body(UserRegisterResponseDto(user.id!!, user.nickname, token))
 
         return response
     }
@@ -119,6 +119,7 @@ data class UserCreateDto(
 data class UserRegisterResponseDto(
     val userId: Long,
     val nickName: String,
+    val token: String,
 )
 
 // 2) 감정 기록 요청 DTO
