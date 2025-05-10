@@ -9,13 +9,16 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+) {
     @Bean
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
@@ -68,24 +71,13 @@ class SecurityConfig {
 //                authorize(anyRequest, authenticated)
                 authorize(anyRequest, permitAll)
             }
-            formLogin {
-                loginProcessingUrl = "/api/auth/login"
-                usernameParameter = "username"
-                passwordParameter = "password"
-                // authenticationSuccessHandler = customAuthenticationSuccessHandler
-                // authenticationFailureHandler = customUrlAuthenticationFailureHandler
-            }
-            logout {
-                logoutUrl = "/api/auth/logout"
-                // logoutSuccessHandler = HttpStatusReturningLogoutSuccessHandler()
-            }
             sessionManagement {
                 sessionCreationPolicy = SessionCreationPolicy.STATELESS
             }
             exceptionHandling {
                 // authenticationEntryPoint = customAuthenticationEntryPoint
             }
-            // addFilterAfter<UsernamePasswordAuthenticationFilter>(profileExistenceFilter)
+            addFilterAfter<UsernamePasswordAuthenticationFilter>(jwtAuthenticationFilter)
             // addFilterBefore<UsernamePasswordAuthenticationFilter>(jwtAuthenticationFilter)
         }
         return http.build()

@@ -1,4 +1,3 @@
 package com.example.skystWaffleunivServer.controller
 
-class ReactionController {
-}
+class ReactionController

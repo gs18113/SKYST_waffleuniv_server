@@ -1,4 +1,3 @@
 package com.example.skystWaffleunivServer.config
 
-class WebSocketConfig {
-}
+class WebSocketConfig
