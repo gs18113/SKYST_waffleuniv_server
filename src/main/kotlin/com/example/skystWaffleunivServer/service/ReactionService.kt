@@ -1,3 +1,7 @@
 package com.example.skystWaffleunivServer.service
 
-class ReactionService
+import org.springframework.stereotype.Service
+
+@Service
+class ReactionService {
+}

@@ -1,8 +1,10 @@
 package com.example.skystWaffleunivServer.dto
 
+import com.example.skystWaffleunivServer.domain.RoomEntity
+
 class RoomDto() {
     companion object {
-        fun fromEntity(entity: com.example.skystWaffleunivServer.domain.room.RoomEntity): RoomDto {
+        fun fromEntity(entity: RoomEntity): RoomDto {
             return RoomDto()
         }
     }
