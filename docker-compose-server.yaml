@@ -30,5 +30,31 @@ services:
       timeout: 5s
       retries: 5
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - spring-app
+    network_mode: "host"
+    restart: always
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - nginx
+    network_mode: "host"
+    command: certonly --webroot --webroot-path=/var/www/certbot --email seungmin960@gmail.com --agree-tos --no-eff-email -d skyst-waffleuniv-client.vercel.app -d www.skyst-waffleuniv-client.vercel.app
+
 volumes:
   db-data:
