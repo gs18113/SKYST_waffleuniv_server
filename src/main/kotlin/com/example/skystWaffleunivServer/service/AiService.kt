@@ -3,5 +3,4 @@ package com.example.skystWaffleunivServer.service
 import org.springframework.stereotype.Service
 
 @Service
-class AiService {
-}
+class AiService
