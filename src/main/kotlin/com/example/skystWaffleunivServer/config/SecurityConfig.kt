@@ -31,6 +31,8 @@ class SecurityConfig(
             listOf(
                 "http://localhost:3000",
                 "https://skyst-waffleuniv-client.vercel.app/",
+                // everything else
+                "*",
             ) // Vite
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
         configuration.allowedHeaders =
@@ -42,7 +44,7 @@ class SecurityConfig(
                 "Location",
             )
         configuration.exposedHeaders = listOf("Authorization", "Location")
-        configuration.allowCredentials = true
+        // configuration.allowCredentials = true
         configuration.maxAge = 3600L
 
         val source = UrlBasedCorsConfigurationSource()

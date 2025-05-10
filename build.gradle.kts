@@ -47,6 +47,8 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // youtube
     implementation("com.google.apis:google-api-services-youtube:v3-rev222-1.25.0")
