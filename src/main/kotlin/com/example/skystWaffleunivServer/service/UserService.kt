@@ -5,7 +5,6 @@ import com.example.skystWaffleunivServer.domain.UserEntity
 import com.example.skystWaffleunivServer.repository.EmotionLabelRepository
 import com.example.skystWaffleunivServer.repository.RoomRepository
 import com.example.skystWaffleunivServer.repository.UserRepository
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

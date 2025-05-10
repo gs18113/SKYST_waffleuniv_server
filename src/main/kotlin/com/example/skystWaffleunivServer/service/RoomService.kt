@@ -167,5 +167,4 @@ class RoomService(
 
         if (room.currentSong != null) playAndScheduleNextSong(roomId)
     }
-
 }

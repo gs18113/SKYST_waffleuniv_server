@@ -6,10 +6,8 @@ import com.example.skystWaffleunivServer.service.ReactionService
 import com.example.skystWaffleunivServer.service.RoomService
 import com.example.skystWaffleunivServer.service.UserService
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -46,7 +44,6 @@ class RoomController(
         val room = roomService.findRoomById(roomId)
         return ResponseEntity.ok(room)
     }
-
 }
 
 data class RoomCreateDto(
