@@ -44,6 +44,12 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+
+    // youtube
+    implementation("com.google.apis:google-api-services-youtube:v3-rev222-1.25.0")
+    implementation("com.google.api-client:google-api-client:1.33.0")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+    implementation("com.google.http-client:google-http-client-gson:1.42.3")
 }
 
 dependencyManagement {
