@@ -36,6 +36,7 @@
 
         function sendMessage() {
             const message = document.getElementById("message").value;
+            const sourceUrl = document.getElementById("sourceurl").value;
             const token = document.getElementById("token").value;
             if (stompClient && stompClient.connected) {
                 // Create headers object with Authorization
@@ -48,7 +49,8 @@
                 stompClient.send("/app/room/1/songrequest", headers, JSON.stringify({
                     title: "Song Title",
                     artist: "Artist Name",
-                    sourceUrl: message
+                    sourceUrl: sourceUrl,
+                    comment: message,
                 }));
 
                 console.log("Message sent with auth:", message);
@@ -112,6 +114,8 @@
 <button onclick="connectWebSocket()">Connect</button>
 
 <h2>Send Message</h2>
+<label for="sourceurl">Source URL:</label>
+<input type="text" id="sourceurl" placeholder="Type your message here">
 <label for="message">Message:</label>
 <input type="text" id="message" placeholder="Type your message here">
 <label for="token">token:</label>
