@@ -4,7 +4,9 @@ import com.example.skystWaffleunivServer.controller.EmotionLabelCreateDto
 import com.example.skystWaffleunivServer.controller.EmotionLabelUpdateDto
 import com.example.skystWaffleunivServer.domain.EmotionLabelEntity
 import com.example.skystWaffleunivServer.dto.EmotionLabelDto
+import com.example.skystWaffleunivServer.exception.DomainException
 import com.example.skystWaffleunivServer.repository.EmotionLabelRepository
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -36,7 +38,7 @@ class EmotionLabelService(
     ): EmotionLabelDto {
         val label =
             emotionLabelRepository.findById(id).orElseThrow {
-                IllegalArgumentException("Emotion label with ID $id not found")
+                DomainException(400, HttpStatus.BAD_REQUEST, "Emotion label with ID $id not found")
             }
         label.name = dto.name
         val updatedLabel = emotionLabelRepository.save(label)
@@ -47,7 +49,7 @@ class EmotionLabelService(
     @Transactional
     fun deleteEmotionLabel(id: Long) {
         if (!emotionLabelRepository.existsById(id)) {
-            throw IllegalArgumentException("Emotion label with ID $id not found")
+            throw DomainException(400, HttpStatus.BAD_REQUEST, "Emotion label with ID $id not found")
         }
         emotionLabelRepository.deleteById(id)
     }

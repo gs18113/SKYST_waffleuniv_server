@@ -2,9 +2,11 @@ package com.example.skystWaffleunivServer.service
 
 import com.example.skystWaffleunivServer.domain.RoomEntity
 import com.example.skystWaffleunivServer.domain.UserEntity
+import com.example.skystWaffleunivServer.exception.DomainException
 import com.example.skystWaffleunivServer.repository.EmotionLabelRepository
 import com.example.skystWaffleunivServer.repository.RoomRepository
 import com.example.skystWaffleunivServer.repository.UserRepository
+import org.springframework.http.HttpStatus
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -44,14 +46,14 @@ class UserService(
     ): AnalysisResult {
         val user =
             userRepository.findById(userId)
-                .orElseThrow { IllegalArgumentException("User not found: $userId") }
+                .orElseThrow { DomainException(400, HttpStatus.BAD_REQUEST, "User does not exist") }
 
         user.recordContent = content
         val aiResult = aiService.analyzeEmotion(content)
         // aiResult -> labelId, lableName, comment
         val labelEntity =
             emotionLabelRepository.findById(aiResult.labelId)
-                .orElseThrow { IllegalArgumentException("Label not found: ${aiResult.labelId}") }
+                .orElseThrow { DomainException(128, HttpStatus.INTERNAL_SERVER_ERROR, "Label not found: ${aiResult.labelId}") }
 
         user.label = labelEntity
         userRepository.save(user)
@@ -147,7 +149,7 @@ class UserService(
             userRepository.findById(userId)
                 .orElseThrow { IllegalArgumentException("User not found: $userId") }
 
-        val room = user.currentRoom ?: throw IllegalStateException("User is not in a room")
+        val room = user.currentRoom ?: throw DomainException(400, HttpStatus.BAD_REQUEST, "User is not in a room")
 
         room.userCount -= 1
         roomRepository.save(room)

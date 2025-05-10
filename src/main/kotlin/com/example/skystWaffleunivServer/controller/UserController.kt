@@ -1,10 +1,12 @@
 package com.example.skystWaffleunivServer.controller
 
 import com.example.skystWaffleunivServer.dto.UserDto
+import com.example.skystWaffleunivServer.exception.DomainException
 import com.example.skystWaffleunivServer.jwt.service.TokenService
 import com.example.skystWaffleunivServer.repository.UserRepository
 import com.example.skystWaffleunivServer.service.UserService
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -46,9 +48,13 @@ class UserController(
     @PutMapping("/record")
     fun updateRecordAndAnalyze(
         @RequestBody dto: UserRecordDto,
-        @AuthenticationPrincipal userId: Long,
+        @AuthenticationPrincipal userId: Long?,
     ): ResponseEntity<UserRecordResponseDto> {
-        val analysis = userService.updateRecordAndAnalyze(userId, dto.content)
+        val analysis =
+            userService.updateRecordAndAnalyze(
+                userId ?: throw DomainException(403, HttpStatus.UNAUTHORIZED, "Null authorization token"),
+                dto.content,
+            )
         // analysis.comment, analysis.labelId 포함
         return ResponseEntity.ok(
             UserRecordResponseDto(

@@ -1,10 +1,12 @@
 package com.example.skystWaffleunivServer.youtube.service
 
+import com.example.skystWaffleunivServer.exception.DomainException
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.youtube.YouTube
 import com.google.api.services.youtube.YouTubeRequestInitializer
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.time.Duration
 
@@ -32,7 +34,7 @@ class YoutubeService {
         val response = videoRequest.execute()
 
         if (response.items.isEmpty()) {
-            throw Exception("Video not found")
+            throw DomainException(124, HttpStatus.BAD_REQUEST, "Video not found")
         }
 
         // Duration is in ISO 8601 format (e.g., PT1H2M3S for 1 hour, 2 minutes, 3 seconds)

@@ -2,10 +2,12 @@ package com.example.skystWaffleunivServer.sock.controller
 
 import com.example.skystWaffleunivServer.dto.ReactionDto
 import com.example.skystWaffleunivServer.dto.SongRequestDto
+import com.example.skystWaffleunivServer.exception.DomainException
 import com.example.skystWaffleunivServer.jwt.service.TokenService
 import com.example.skystWaffleunivServer.repository.UserRepository
 import com.example.skystWaffleunivServer.service.RoomService
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -31,9 +33,9 @@ class SocketController(
         val userId = tokenService.getUserIdFromToken(accessToken.drop(7))
         val user =
             userRepository.findByIdOrNull(userId)
-                ?: throw Exception("User not found")
+                ?: throw DomainException(400, HttpStatus.BAD_REQUEST, "User not found")
         if (user.currentRoom?.id != roomId) {
-            throw Exception("User is not in the room")
+            throw DomainException(400, HttpStatus.BAD_REQUEST, "User is not in the room")
         }
         roomService.addSongToRoom(userId, roomId, songRequestDto)
     }

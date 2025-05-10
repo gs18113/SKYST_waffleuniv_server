@@ -1,8 +1,10 @@
 package com.example.skystWaffleunivServer.service
 
+import com.example.skystWaffleunivServer.exception.DomainException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -76,7 +78,7 @@ class AiService(
                 .bodyValue(requestBody)
                 .retrieve()
                 .bodyToMono(String::class.java)
-                .block() ?: throw IllegalStateException("Empty response from OpenAI")
+                .block() ?: throw DomainException(123, HttpStatus.INTERNAL_SERVER_ERROR, "Empty response from OpenAI")
 
         val mapper = jacksonObjectMapper()
         val root = mapper.readTree(responseJson)
@@ -86,16 +88,16 @@ class AiService(
                 ?.get("message")
                 ?.get("content")
                 ?.asText()
-                ?: throw IllegalStateException("No content in OpenAI response")
+                ?: throw DomainException(125, HttpStatus.INTERNAL_SERVER_ERROR, "No content in OpenAI response")
 
         // AI가 순수 JSON만 반환한다고 가정하고 파싱
         val resultNode = mapper.readTree(messageContent)
         val labelId =
             resultNode["labelId"]?.asLong()
-                ?: throw IllegalStateException("labelId missing in AI response")
+                ?: throw DomainException(500, HttpStatus.INTERNAL_SERVER_ERROR, "labelId missing in AI response")
         val comment =
             resultNode["comment"]?.asText()
-                ?: throw IllegalStateException("comment missing in AI response")
+                ?: throw DomainException(500, HttpStatus.INTERNAL_SERVER_ERROR, "comment missing in AI response")
 
         return AnalyzeResult(labelId, comment.trim())
     }

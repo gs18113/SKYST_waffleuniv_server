@@ -5,6 +5,7 @@ import com.example.skystWaffleunivServer.dto.ReactionDto
 import com.example.skystWaffleunivServer.dto.RoomDto
 import com.example.skystWaffleunivServer.dto.SongPlayDto
 import com.example.skystWaffleunivServer.dto.SongRequestDto
+import com.example.skystWaffleunivServer.exception.DomainException
 import com.example.skystWaffleunivServer.repository.EmotionLabelRepository
 import com.example.skystWaffleunivServer.repository.RoomRepository
 import com.example.skystWaffleunivServer.repository.SongRequestRepository
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.stereotype.Service
@@ -50,14 +52,14 @@ class RoomService(
     @Transactional
     fun findRoomById(roomId: Long): RoomDto {
         return roomRepository.findByIdOrNull(roomId)?.let { RoomDto.fromEntity(it) }
-            ?: throw Exception("Room not found")
+            ?: throw DomainException(400, HttpStatus.BAD_REQUEST, "Room not found")
     }
 
     fun addReaction(
         roomId: Long,
         reactionDto: ReactionDto,
     ) {
-        roomRepository.findByIdOrNull(roomId) ?: throw Exception("Room not found")
+        roomRepository.findByIdOrNull(roomId) ?: throw DomainException(400, HttpStatus.BAD_REQUEST, "Room not found")
         messagingTemplate.convertAndSend(
             "/topic/room/$roomId",
             mapOf(
@@ -183,8 +185,8 @@ class RoomService(
 
     fun playNextSong(roomId: Long) {
         logger.info { "playNextSong called" }
-        val room = roomRepository.findByIdOrNull(roomId) ?: throw Exception("Room not found")
-        val currentSong = room.currentSong ?: throw Exception("No current song to play")
+        val room = roomRepository.findByIdOrNull(roomId) ?: throw DomainException(400, HttpStatus.BAD_REQUEST, "Room not found")
+        val currentSong = room.currentSong ?: throw DomainException(400, HttpStatus.BAD_REQUEST, "No current song to play")
 
         // remove current song from songRequestRepository and
         // set room.currentSong to the next song, which is the SongRequestEntity associated with this room and the oldest requestedAt.
