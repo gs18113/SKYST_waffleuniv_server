@@ -1,4 +1,4 @@
 package com.example.skystWaffleunivServer.service
 
-class SongRequestController {
+class SongRequestService {
 }
