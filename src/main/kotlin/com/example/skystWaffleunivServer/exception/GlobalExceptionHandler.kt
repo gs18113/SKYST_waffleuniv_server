@@ -1,0 +1,4 @@
+package com.example.skystWaffleunivServer.exception
+
+class GlobalExceptionHandler {
+}
