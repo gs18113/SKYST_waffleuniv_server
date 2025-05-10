@@ -1,8 +1,10 @@
 package com.example.skystWaffleunivServer.dto
 
+import com.example.skystWaffleunivServer.domain.ReactionEntity
+
 class ReactionDto() {
     companion object {
-        fun fromEntity(entity: com.example.skystWaffleunivServer.domain.reaction.ReactionEntity): ReactionDto {
+        fun fromEntity(entity: ReactionEntity): ReactionDto {
             return ReactionDto()
         }
     }

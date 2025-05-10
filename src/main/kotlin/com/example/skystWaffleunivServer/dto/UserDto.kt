@@ -1,6 +1,6 @@
 package com.example.skystWaffleunivServer.dto
 
-import com.example.skystWaffleunivServer.domain.user.UserEntity
+import com.example.skystWaffleunivServer.domain.UserEntity
 
 data class UserDto(
     val id: Long,

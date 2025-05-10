@@ -1,6 +1,8 @@
 package com.example.skystWaffleunivServer.repository
 
-import com.example.skystWaffleunivServer.domain.user.UserEntity
+import com.example.skystWaffleunivServer.domain.UserEntity
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface UserRepository : JpaRepository<UserEntity, Long>
+interface UserRepository : JpaRepository<UserEntity, Long>{
+    fun countByColorHex(colorHex: String): Int
+}
