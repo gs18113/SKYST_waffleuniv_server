@@ -111,7 +111,7 @@ data class UserRegisterResponseDto(
 // 2) 감정 기록 요청 DTO
 data class UserRecordDto(
     val content: String,
-){
+) {
     // Add a no-args constructor for Jackson
     constructor() : this("")
 }

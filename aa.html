@@ -36,15 +36,22 @@
 
         function sendMessage() {
             const message = document.getElementById("message").value;
+            const token = document.getElementById("token").value;
             if (stompClient && stompClient.connected) {
-                // Send to your application endpoint
-                stompClient.send("/app/room/1/songrequest", {}, JSON.stringify({
+                // Create headers object with Authorization
+                const headers = {
+                    "Authorization": "Bearer " + token, // Function to get your auth token
+                    "Content-Type": "application/json"
+                };
+
+                // Send to your application endpoint with headers
+                stompClient.send("/app/room/1/songrequest", headers, JSON.stringify({
                     title: "Song Title",
                     artist: "Artist Name",
                     sourceUrl: message
+                }));
 
-            }));
-                console.log("Message sent:", message);
+                console.log("Message sent with auth:", message);
             } else {
                 alert("STOMP is not connected.");
             }
@@ -71,6 +78,8 @@
 <h2>Send Message</h2>
 <label for="message">Message:</label>
 <input type="text" id="message" placeholder="Type your message here">
+<label for="token">token:</label>
+<input type="text" id="token" placeholder="Type your token here">
 <button onclick="sendMessage()">Send</button>
 
 <h2>Close Connection</h2>
