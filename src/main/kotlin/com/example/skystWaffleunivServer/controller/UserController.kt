@@ -98,7 +98,10 @@ class UserController(
 // 1) 사용자 생성 요청 DTO
 data class UserCreateDto(
     val colorHex: String,
-)
+) {
+    // Add a no-args constructor for Jackson
+    constructor() : this("")
+}
 
 // 1) 사용자 생성 응답 DTO
 data class UserRegisterResponseDto(
@@ -108,7 +111,10 @@ data class UserRegisterResponseDto(
 // 2) 감정 기록 요청 DTO
 data class UserRecordDto(
     val content: String,
-)
+){
+    // Add a no-args constructor for Jackson
+    constructor() : this("")
+}
 
 // 2) 감정 기록 + AI 분석 응답 DTO
 data class UserRecordResponseDto(
