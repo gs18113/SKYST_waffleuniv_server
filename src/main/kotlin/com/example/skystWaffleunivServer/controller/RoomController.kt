@@ -24,7 +24,6 @@ class RoomController(
     private val reactionService: ReactionService,
     private val emotionLabelService: EmotionLabelService,
 ) {
-
     @PostMapping
     fun createRoom(
         @AuthenticationPrincipal userId: Long,

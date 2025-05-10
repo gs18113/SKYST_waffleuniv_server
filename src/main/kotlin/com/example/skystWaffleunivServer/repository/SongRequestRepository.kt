@@ -8,4 +8,6 @@ interface SongRequestRepository : JpaRepository<SongRequestEntity, Long> {
         roomId: Long,
         status: String,
     ): SongRequestEntity?
+
+    fun findAllByRoomIdOrderByRequestedAtAsc(roomId: Long): List<SongRequestEntity>
 }

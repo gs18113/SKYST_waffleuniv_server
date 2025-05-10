@@ -19,16 +19,20 @@ class SongRequestController(
     fun createRequest(
         @PathVariable roomId: Long,
         @RequestBody dto: SongRequestCreateDto,
-        @AuthenticationPrincipal userId: Long
+        @AuthenticationPrincipal userId: Long,
     ): ResponseEntity<SongRequestCreateResponseDto> {
         // 1) 서비스 호출로 DB INSERT 및 song_count 증가
-        val requestId = songRequestService.createRequest(
-            userId, roomId,
-            dto.title, dto.artist, dto.sourceUrl
-        )
+        val requestId =
+            songRequestService.createRequest(
+                userId,
+                roomId,
+                dto.title,
+                dto.artist,
+                dto.sourceUrl,
+            )
 
         return ResponseEntity.ok(
-            SongRequestCreateResponseDto(requestId)
+            SongRequestCreateResponseDto(requestId),
         )
     }
 
@@ -46,11 +50,11 @@ class SongRequestController(
 data class SongRequestCreateDto(
     val title: String,
     val artist: String,
-    val sourceUrl: String
+    val sourceUrl: String,
 )
 
 data class SongRequestCreateResponseDto(
-    val requestId: Long
+    val requestId: Long,
 )
 
 data class SongRequestDto(
@@ -62,5 +66,5 @@ data class SongRequestDto(
     val sourceUrl: String,
     val status: String,
     val requestedAt: LocalDateTime,
-    val songCount: Int
+    val songCount: Int,
 )

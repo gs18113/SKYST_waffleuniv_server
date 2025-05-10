@@ -1,6 +1,5 @@
 package com.example.skystWaffleunivServer.service
 
-
 import com.example.skystWaffleunivServer.controller.RoomCreateDto
 import com.example.skystWaffleunivServer.domain.RoomEntity
 import com.example.skystWaffleunivServer.dto.RoomDto
@@ -42,15 +41,17 @@ class RoomService(
 
     fun createRoom(
         userId: Long,
-        dto: RoomCreateDto
+        dto: RoomCreateDto,
     ): RoomEntity {
-        val label = emotionLabelRepository.findByName(dto.emotionLabel)
-            ?: throw Exception("Emotion label not found")
+        val label =
+            emotionLabelRepository.findByName(dto.emotionLabel)
+                ?: throw Exception("Emotion label not found")
 
-        val room = RoomEntity(
-            roomName = dto.roomName,
-            label = label
-        )
+        val room =
+            RoomEntity(
+                roomName = dto.roomName,
+                label = label,
+            )
 
         return room
     }
