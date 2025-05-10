@@ -1,5 +1,6 @@
 package com.example.skystWaffleunivServer.service
 
+import com.example.skystWaffleunivServer.domain.RoomEntity
 import com.example.skystWaffleunivServer.domain.UserEntity
 import com.example.skystWaffleunivServer.repository.EmotionLabelRepository
 import com.example.skystWaffleunivServer.repository.RoomRepository
@@ -93,9 +94,15 @@ class UserService(
         user.label = emotionLabelRepository.findByIdOrNull(1)
         val labelId = user.label!!.id!!
 
-        val rooms = roomRepository.findByLabelId(labelId)
+        var rooms = roomRepository.findByLabelId(labelId)
         if (rooms.isEmpty()) {
-            roomService.createRoom(user)
+            val room =
+                RoomEntity(
+                    roomName = user.label!!.name,
+                    label = user.label!!,
+                )
+            roomRepository.save(room)
+            rooms = roomRepository.findByLabelId(labelId)
         }
 
         // 가장 적은 인원 방 선택
@@ -104,7 +111,13 @@ class UserService(
                 ?: throw IllegalStateException("No available rooms")
 
         if (target.userCount >= 10) {
-            roomService.createRoom(user)
+            val room =
+                RoomEntity(
+                    roomName = user.label!!.name,
+                    label = user.label!!,
+                )
+            roomRepository.save(room)
+            rooms = roomRepository.findByLabelId(labelId)
             target = rooms.minByOrNull { it.userCount }
                 ?: throw IllegalStateException("No available rooms")
         }

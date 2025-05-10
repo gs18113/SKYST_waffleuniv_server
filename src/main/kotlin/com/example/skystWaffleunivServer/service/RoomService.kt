@@ -1,8 +1,6 @@
 package com.example.skystWaffleunivServer.service
 
-import com.example.skystWaffleunivServer.domain.RoomEntity
 import com.example.skystWaffleunivServer.domain.SongRequestEntity
-import com.example.skystWaffleunivServer.domain.UserEntity
 import com.example.skystWaffleunivServer.dto.RoomDto
 import com.example.skystWaffleunivServer.dto.SongPlayDto
 import com.example.skystWaffleunivServer.dto.SongRequestDto
@@ -11,6 +9,7 @@ import com.example.skystWaffleunivServer.repository.RoomRepository
 import com.example.skystWaffleunivServer.repository.SongRequestRepository
 import com.example.skystWaffleunivServer.repository.UserRepository
 import com.example.skystWaffleunivServer.youtube.service.YoutubeService
+import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -34,25 +33,18 @@ class RoomService(
     private val scheduledTasks = ConcurrentHashMap<Long, ScheduledFuture<*>>()
     private val taskScheduler = ThreadPoolTaskScheduler().apply { initialize() }
 
+    @Transactional
     fun findAllRooms(): List<RoomDto> {
         return roomRepository.findAll().map { RoomDto.fromEntity(it) }
     }
 
+    @Transactional
     fun findRoomById(roomId: Long): RoomDto {
         return roomRepository.findByIdOrNull(roomId)?.let { RoomDto.fromEntity(it) }
             ?: throw Exception("Room not found")
     }
 
-    fun createRoom(user: UserEntity): RoomEntity {
-        val room =
-            RoomEntity(
-                roomName = user.label!!.name,
-                label = user.label!!,
-            )
-
-        return room
-    }
-
+    @Transactional
     fun addSongToRoom(
         userId: Long,
         roomId: Long,
@@ -74,6 +66,7 @@ class RoomService(
                         duration = duration,
                         artist = song.artist,
                     )
+                songRequestRepository.save(songRequestEntity)
                 room.songCount++
                 room.currentSong = songRequestEntity
                 roomRepository.save(room)
