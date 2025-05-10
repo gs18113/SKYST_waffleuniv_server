@@ -81,10 +81,10 @@
 
 ## 🛠 기술 스택
 
+- **Frontend**: Next.js(typescript), tailwindCSS, Vercel
 - **Backend**: Spring Boot, WebSocket, Spring Data JPA  
-- **AI**: OpenAI GPT (감정 분석)  
-- **Database**: MySQL (ERD 기반 테이블 설계)  
-- **Frontend**: React (실시간 뷰 + 애니메이션)  
+- **AI**: OpenAI GPT API (감정 분석)  
+- **Database**: MySQL (ERD 기반 테이블 설계) 
 
 ---
 
