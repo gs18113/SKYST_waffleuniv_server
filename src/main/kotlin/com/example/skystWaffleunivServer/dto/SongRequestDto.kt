@@ -1,13 +1,9 @@
 package com.example.skystWaffleunivServer.dto
 
-class SongRequestDto (
-
-) {
+class SongRequestDto() {
     companion object {
         fun fromEntity(entity: com.example.skystWaffleunivServer.domain.songrequest.SongRequestEntity): SongRequestDto {
-            return SongRequestDto(
-
-            )
+            return SongRequestDto()
         }
     }
 }
