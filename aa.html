@@ -1,194 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>WebSocket Test Client</title>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            max-width: 800px;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .message-container {
-            border: 1px solid #ccc;
-            padding: 10px;
-            height: 300px;
-            overflow-y: auto;
-        }
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        button {
-            padding: 8px 12px;
-            cursor: pointer;
-        }
-        input, select {
-            padding: 8px;
-            flex-grow: 1;
-        }
-        .status {
-            padding: 5px;
-            margin-bottom: 10px;
-            border-radius: 3px;
-        }
-        .connected {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .disconnected {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-    </style>
-</head>
-<body>
-<h1>WebSocket Test Client</h1>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Testing</title>
+    <script>
+        let socket;
 
-<div class="container">
-    <div class="status disconnected" id="status">Disconnected</div>
+        function connectWebSocket() {
+            const wsUrl = document.getElementById("wsUrl").value;
+            socket = new WebSocket(wsUrl);
 
-    <div class="controls">
-        <input type="text" id="serverUrl" value="ws://localhost:8080/ws" placeholder="Server URL"/>
-        <input type="text" id="userId" value="1" placeholder="User ID"/>
-        <button id="connectBtn">Connect</button>
-        <button id="disconnectBtn" disabled>Disconnect</button>
-    </div>
-
-    <h3>Send Notification</h3>
-    <div class="controls">
-        <select id="destination">
-            <option value="app/notification">Send to User (via /app/notification)</option>
-            <option value="topic/notifications">Broadcast (via /topic/notifications)</option>
-        </select>
-    </div>
-
-    <div class="controls">
-        <input type="text" id="recipientId" value="1" placeholder="Recipient User ID"/>
-        <input type="text" id="message" placeholder="Message"/>
-        <button id="sendBtn" disabled>Send</button>
-    </div>
-
-    <h3>Messages</h3>
-    <div class="message-container" id="messages"></div>
-</div>
-
-<script>
-    let stompClient = null;
-    const statusEl = document.getElementById('status');
-    const messagesEl = document.getElementById('messages');
-    const connectBtn = document.getElementById('connectBtn');
-    const disconnectBtn = document.getElementById('disconnectBtn');
-    const sendBtn = document.getElementById('sendBtn');
-
-    function connect() {
-        const serverUrl = document.getElementById('serverUrl').value;
-        const userId = document.getElementById('userId').value;
-
-        const socket = new SockJS(serverUrl);
-        stompClient = Stomp.over(socket);
-
-        // Optional: For debugging
-        // stompClient.debug = function(str) {
-        //     console.log(str);
-        // };
-
-        stompClient.connect({}, function(frame) {
-            statusEl.textContent = `Connected as user ${userId}`;
-            statusEl.classList.remove('disconnected');
-            statusEl.classList.add('connected');
-
-            connectBtn.disabled = true;
-            disconnectBtn.disabled = false;
-            sendBtn.disabled = false;
-
-            // Subscribe to broadcast notifications
-            stompClient.subscribe('/topic/notifications', function(message) {
-                displayMessage('BROADCAST', message.body);
-            });
-
-            // Subscribe to personal notifications
-            stompClient.subscribe('/user/' + userId + '/queue/notifications', function(message) {
-                displayMessage('PERSONAL', message.body);
-            });
-
-            displayMessage('SYSTEM', 'Connected to WebSocket server');
-        }, function(error) {
-            statusEl.textContent = 'Connection error: ' + error;
-            displayMessage('ERROR', 'Connection failed: ' + error);
-        });
-    }
-
-    function disconnect() {
-        if (stompClient !== null) {
-            stompClient.disconnect();
-            stompClient = null;
-
-            statusEl.textContent = 'Disconnected';
-            statusEl.classList.remove('connected');
-            statusEl.classList.add('disconnected');
-
-            connectBtn.disabled = false;
-            disconnectBtn.disabled = true;
-            sendBtn.disabled = true;
-
-            displayMessage('SYSTEM', 'Disconnected from WebSocket server');
-        }
-    }
-
-    function sendMessage() {
-        if (stompClient && stompClient.connected) {
-            const destination = document.getElementById('destination').value;
-            const recipientId = document.getElementById('recipientId').value;
-            const message = document.getElementById('message').value;
-
-            const notification = {
-                userId: parseInt(recipientId),
-                message: message,
-                timestamp: Date.now()
+            socket.onopen = () => {
+                console.log("WebSocket connection established.");
+                alert("WebSocket connection established.");
             };
 
-            stompClient.send('/' + destination, {}, JSON.stringify(notification));
-            displayMessage('SENT', JSON.stringify(notification));
-            document.getElementById('message').value = '';
+            socket.onmessage = (event) => {
+                console.log("Message received:", event.data);
+                const messages = document.getElementById("messages");
+                const messageElement = document.createElement("div");
+                messageElement.textContent = event.data;
+                messages.appendChild(messageElement);
+            };
+
+            socket.onclose = () => {
+                console.log("WebSocket connection closed.");
+                alert("WebSocket connection closed.");
+            };
+
+            socket.onerror = (error) => {
+                console.error("WebSocket error:", error);
+                alert("WebSocket error occurred. Check the console for details.");
+            };
         }
-    }
 
-    function displayMessage(type, content) {
-        const messageEl = document.createElement('div');
-        const timestamp = new Date().toLocaleTimeString();
-
-        try {
-            // Try to parse and format JSON messages
-            const jsonContent = JSON.parse(content);
-            content = JSON.stringify(jsonContent, null, 2);
-        } catch (e) {
-            // Not JSON, use as is
+        function sendMessage() {
+            const message = document.getElementById("message").value;
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(message);
+                console.log("Message sent:", message);
+            } else {
+                alert("WebSocket is not connected.");
+            }
         }
 
-        messageEl.innerHTML = `<strong>${timestamp} [${type}]</strong>: <pre>${content}</pre>`;
-        messagesEl.appendChild(messageEl);
-        messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
-
-    // Event listeners
-    connectBtn.addEventListener('click', connect);
-    disconnectBtn.addEventListener('click', disconnect);
-    sendBtn.addEventListener('click', sendMessage);
-
-    // Allow pressing Enter in message input
-    document.getElementById('message').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            sendMessage();
+        function closeWebSocket() {
+            if (socket) {
+                socket.close();
+            } else {
+                alert("WebSocket is not connected.");
+            }
         }
-    });
-</script>
+    </script>
+</head>
+<body>
+<h1>WebSocket Testing</h1>
+
+<h2>Connect to WebSocket</h2>
+<label for="wsUrl">WebSocket URL:</label>
+<input type="text" id="wsUrl" placeholder="ws://localhost:8080/ws" required>
+<button onclick="connectWebSocket()">Connect</button>
+
+<h2>Send Message</h2>
+<label for="message">Message:</label>
+<input type="text" id="message" placeholder="Type your message here">
+<button onclick="sendMessage()">Send</button>
+
+<h2>Close Connection</h2>
+<button onclick="closeWebSocket()">Close WebSocket</button>
+
+<h2>Received Messages</h2>
+<div id="messages" style="border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: scroll;">
+    <!-- Messages will appear here -->
+</div>
 </body>
 </html>
