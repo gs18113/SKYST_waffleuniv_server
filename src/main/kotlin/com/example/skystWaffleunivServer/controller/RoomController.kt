@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/rooms")
@@ -22,7 +21,7 @@ class RoomController(
     private val roomService: RoomService,
     private val songRequestService: SongRequestService,
     private val reactionService: ReactionService,
-    private val emotionLabelService: EmotionLabelService
+    private val emotionLabelService: EmotionLabelService,
 ) {
     /**
      * 전체 방 목록 조회

@@ -21,7 +21,6 @@ class UserController(
     private val userService: UserService,
     private val userRepository: UserRepository,
 ) {
-
     // 1) 최초 프로필 설정: colorHex만 입력, nickname 생성 후 userId 반환
     @PostMapping("/register")
     fun register(
@@ -94,7 +93,6 @@ class UserController(
 
         return ResponseEntity.ok(UserDto.fromEntity(user))
     }
-
 }
 
 // 1) 사용자 생성 요청 DTO
@@ -114,15 +112,20 @@ data class UserRecordDto(
 
 // 2) 감정 기록 + AI 분석 응답 DTO
 data class UserRecordResponseDto(
-    val comment: String, // AI 공감 코멘트
-    val labelId: Long, // AI 추천 감정 라벨 ID
-    val labelName: String, // AI 추천 감정 라벨 이름
+    val comment: String,
+    // AI 공감 코멘트
+    val labelId: Long,
+    // AI 추천 감정 라벨 ID
+    val labelName: String,
+    // AI 추천 감정 라벨 이름
 )
 
 // 3) AI 피드백 DTO
 data class FeedbackDto(
-    val isCorrect: Boolean, // AI 분석 결과가 맞는지 여부
-    val labelId: Long? = null, // 피드백 시, 라벨 ID도 함께 전달
+    val isCorrect: Boolean,
+    // AI 분석 결과가 맞는지 여부
+    val labelId: Long? = null,
+    // 피드백 시, 라벨 ID도 함께 전달
 )
 
 // 4) 방 입장 응답 DTO
