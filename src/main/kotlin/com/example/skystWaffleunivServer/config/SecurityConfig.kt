@@ -53,19 +53,20 @@ class SecurityConfig {
             cors { configurationSource = corsConfigurationSource() }
             csrf { disable() }
             authorizeHttpRequests {
-                authorize("/", permitAll)
-                authorize("/error", permitAll)
-                authorize("/swagger-ui/**", permitAll)
-                authorize("/api-docs/**", permitAll)
-                authorize("/v3/api-docs/**", permitAll)
-                authorize("/swagger-resources/**", permitAll)
-
-                // APIs that do not require authentication
-                authorize("/api/auth/**", permitAll)
-                authorize("/api/v1/pingpong/**", permitAll)
-                authorize("/error", permitAll)
-                authorize("/redirect", permitAll)
-                authorize(anyRequest, authenticated)
+//                authorize("/", permitAll)
+//                authorize("/error", permitAll)
+//                authorize("/swagger-ui/**", permitAll)
+//                authorize("/api-docs/**", permitAll)
+//                authorize("/v3/api-docs/**", permitAll)
+//                authorize("/swagger-resources/**", permitAll)
+//
+//                // APIs that do not require authentication
+//                authorize("/api/auth/**", permitAll)
+//                authorize("/api/v1/pingpong/**", permitAll)
+//                authorize("/error", permitAll)
+//                authorize("/redirect", permitAll)
+//                authorize(anyRequest, authenticated)
+                authorize(anyRequest, permitAll)
             }
             formLogin {
                 loginProcessingUrl = "/api/auth/login"
