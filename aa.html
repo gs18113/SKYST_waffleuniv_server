@@ -3,63 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Testing</title>
+    <title>STOMP WebSocket Testing</title>
+    <!-- Include SockJS and STOMP client libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/lib/stomp.min.js"></script>
     <script>
-        let socket;
+        let stompClient = null;
 
         function connectWebSocket() {
-            const wsUrl = document.getElementById("wsUrl").value;
-            socket = new WebSocket(wsUrl);
+            const serverUrl = document.getElementById("wsUrl").value;
+            const socket = new SockJS(serverUrl);
+            stompClient = Stomp.over(socket);
 
-            socket.onopen = () => {
-                console.log("WebSocket connection established.");
-                alert("WebSocket connection established.");
-            };
+            stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+                alert("STOMP connection established.");
 
-            socket.onmessage = (event) => {
-                console.log("Message received:", event.data);
-                const messages = document.getElementById("messages");
-                const messageElement = document.createElement("div");
-                messageElement.textContent = event.data;
-                messages.appendChild(messageElement);
-            };
-
-            socket.onclose = () => {
-                console.log("WebSocket connection closed.");
-                alert("WebSocket connection closed.");
-            };
-
-            socket.onerror = (error) => {
-                console.error("WebSocket error:", error);
-                alert("WebSocket error occurred. Check the console for details.");
-            };
+                // Subscribe to a topic
+                stompClient.subscribe('/topic/room/1', function(response) {
+                    const message = JSON.parse(response.body);
+                    console.log("Message received:", message);
+                    const messages = document.getElementById("messages");
+                    const messageElement = document.createElement("div");
+                    messageElement.textContent = JSON.stringify(message);
+                    messages.appendChild(messageElement);
+                });
+            }, function(error) {
+                console.error("STOMP error:", error);
+                alert("STOMP connection error: " + error);
+            });
         }
 
         function sendMessage() {
             const message = document.getElementById("message").value;
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(message);
+            if (stompClient && stompClient.connected) {
+                // Send to your application endpoint
+                stompClient.send("/app/room/1/songrequest", {}, JSON.stringify({
+                    content: message
+                }));
                 console.log("Message sent:", message);
             } else {
-                alert("WebSocket is not connected.");
+                alert("STOMP is not connected.");
             }
         }
 
         function closeWebSocket() {
-            if (socket) {
-                socket.close();
+            if (stompClient) {
+                stompClient.disconnect();
+                alert("STOMP connection closed.");
             } else {
-                alert("WebSocket is not connected.");
+                alert("STOMP is not connected.");
             }
         }
     </script>
 </head>
 <body>
-<h1>WebSocket Testing</h1>
+<h1>STOMP WebSocket Testing</h1>
 
 <h2>Connect to WebSocket</h2>
 <label for="wsUrl">WebSocket URL:</label>
-<input type="text" id="wsUrl" placeholder="ws://localhost:8080/ws" required>
+<input type="text" id="wsUrl" placeholder="http://localhost:8080/ws" value="http://localhost:8080/ws" required>
 <button onclick="connectWebSocket()">Connect</button>
 
 <h2>Send Message</h2>

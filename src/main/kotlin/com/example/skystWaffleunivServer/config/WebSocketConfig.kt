@@ -16,7 +16,10 @@ class WebSocketConfig() : WebSocketMessageBrokerConfigurer {
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry.addEndpoint("/ws")
-            .setAllowedOrigins("*")
+            .setAllowedOrigins(
+                "http://localhost:3000",
+                "https://skyst-waffleuniv-client.vercel.app",
+            )
             .withSockJS()
     }
 }
