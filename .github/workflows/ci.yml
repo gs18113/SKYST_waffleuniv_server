@@ -44,7 +44,7 @@ jobs:
       
     - name: Set up P12 certificate
       run: |
-        echo "${{ secrets.P12_KEYSTORE_BASE64 }}" | base64 --decode > keystore.p12
+        echo "${{ secrets.KEYSTORE }}" | base64 --decode > ./src/main/resources/keystore.p12
       shell: bash
 
     - name: Build with Gradle
