@@ -27,6 +27,7 @@ class SecurityConfig {
         configuration.allowedOrigins =
             listOf(
                 "http://localhost:3000",
+                "https://skyst-waffleuniv-client.vercel.app/"
             ) // Vite
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
         configuration.allowedHeaders =
