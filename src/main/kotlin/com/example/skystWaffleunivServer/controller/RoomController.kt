@@ -11,11 +11,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/rooms")
+@RequestMapping("api/rooms")
 class RoomController(
     private val userService: UserService,
     private val roomService: RoomService,
@@ -23,9 +24,16 @@ class RoomController(
     private val reactionService: ReactionService,
     private val emotionLabelService: EmotionLabelService,
 ) {
-    /**
-     * 전체 방 목록 조회
-     */
+
+    @PostMapping
+    fun createRoom(
+        @AuthenticationPrincipal userId: Long,
+        @RequestBody dto: RoomCreateDto,
+    ): ResponseEntity<RoomCreateResponseDto> {
+        val room = roomService.createRoom(userId, dto)
+        return ResponseEntity.ok(RoomCreateResponseDto(room.id!!))
+    }
+
     @GetMapping
     fun getAllRooms(): ResponseEntity<List<RoomDto>> {
         val rooms = roomService.findAllRooms()
@@ -67,4 +75,19 @@ class RoomController(
         roomService.leaveRoom(roomId, userId)
         return ResponseEntity.ok().build()
     }
+}
+
+data class RoomCreateDto(
+    val roomName: String,
+    val emotionLabel: String,
+) {
+    // Add a no-args constructor for Jackson
+    constructor() : this("", "")
+}
+
+data class RoomCreateResponseDto(
+    val roomId: Long,
+) {
+    // Add a no-args constructor for Jackson
+    constructor() : this(0L)
 }
