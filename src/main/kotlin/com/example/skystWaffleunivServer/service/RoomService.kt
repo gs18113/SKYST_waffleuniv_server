@@ -168,29 +168,4 @@ class RoomService(
         if (room.currentSong != null) playAndScheduleNextSong(roomId)
     }
 
-    @Transactional
-    fun joinRoom(
-        userId: Long,
-        roomId: Long,
-    ) {
-        val room = roomRepository.findByIdOrNull(roomId) ?: throw Exception("Room not found")
-        val user = userRepository.findByIdOrNull(userId) ?: throw Exception("User not found")
-        room.userCount++
-        user.currentRoom = room
-        userRepository.save(user)
-        roomRepository.save(room)
-    }
-
-    @Transactional
-    fun leaveRoom(
-        userId: Long,
-        roomId: Long,
-    ) {
-        val room = roomRepository.findByIdOrNull(roomId) ?: throw Exception("Room not found")
-        val user = userRepository.findByIdOrNull(userId) ?: throw Exception("User not found")
-        room.userCount--
-        user.currentRoom = null
-        userRepository.save(user)
-        roomRepository.save(room)
-    }
 }
