@@ -28,8 +28,9 @@ class SocketController(
         // Handle the song request
         // For example, you can send the notification to a specific topic
         val userId = tokenService.getUserIdFromToken(accessToken.drop(7))
-        val user = userRepository.findByIdOrNull(userId)
-            ?: throw Exception("User not found")
+        val user =
+            userRepository.findByIdOrNull(userId)
+                ?: throw Exception("User not found")
         if (user.currentRoom?.id != roomId) {
             throw Exception("User is not in the room")
         }

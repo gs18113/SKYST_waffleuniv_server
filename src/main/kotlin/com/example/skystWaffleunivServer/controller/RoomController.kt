@@ -4,7 +4,6 @@ import com.example.skystWaffleunivServer.dto.RoomDto
 import com.example.skystWaffleunivServer.service.EmotionLabelService
 import com.example.skystWaffleunivServer.service.ReactionService
 import com.example.skystWaffleunivServer.service.RoomService
-import com.example.skystWaffleunivServer.service.SongRequestService
 import com.example.skystWaffleunivServer.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController
 class RoomController(
     private val userService: UserService,
     private val roomService: RoomService,
-    private val songRequestService: SongRequestService,
     private val reactionService: ReactionService,
     private val emotionLabelService: EmotionLabelService,
 ) {

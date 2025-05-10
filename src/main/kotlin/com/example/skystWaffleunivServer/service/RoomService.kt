@@ -66,7 +66,7 @@ class RoomService(
         song: SongRequestDto,
     ) {
         youtubeService.getVideIdFromUrl(song.sourceUrl)?.let { videoId ->
-            youtubeService.getVideoDuration(videoId) .let{
+            youtubeService.getVideoDuration(videoId).let {
                     duration ->
                 val room = roomRepository.findByIdOrNull(roomId) ?: throw Exception("Room not found")
                 val user = userRepository.findByIdOrNull(userId) ?: throw Exception("User not found")
@@ -76,10 +76,10 @@ class RoomService(
                         title = song.title,
                         requestedAt = LocalDateTime.now(),
                         status = "REQUESTED",
-                        room= room,
+                        room = room,
                         user = user,
                         duration = duration,
-                        artist = song.artist
+                        artist = song.artist,
                     )
                 room.songCount++
                 room.currentSong = songRequestEntity
@@ -87,8 +87,8 @@ class RoomService(
                 if (room.songCount == 1) {
                     startPlaylist(roomId)
                 }
-            }} ?: throw Exception("Invalid YouTube URL")
-
+            }
+        } ?: throw Exception("Invalid YouTube URL")
     }
 
     fun startPlaylist(roomId: Long) {

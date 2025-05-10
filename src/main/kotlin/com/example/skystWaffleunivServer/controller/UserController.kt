@@ -1,6 +1,7 @@
 package com.example.skystWaffleunivServer.controller
 
 import com.example.skystWaffleunivServer.dto.UserDto
+import com.example.skystWaffleunivServer.jwt.service.TokenService
 import com.example.skystWaffleunivServer.repository.UserRepository
 import com.example.skystWaffleunivServer.service.UserService
 import org.springframework.data.repository.findByIdOrNull
@@ -20,6 +21,7 @@ import java.time.LocalDateTime
 class UserController(
     private val userService: UserService,
     private val userRepository: UserRepository,
+    private val tokenService: TokenService,
 ) {
     // 1) 최초 프로필 설정: colorHex만 입력, nickname 생성 후 userId 반환
     @PostMapping("/register")
@@ -27,6 +29,9 @@ class UserController(
         @RequestBody dto: UserCreateDto,
     ): ResponseEntity<UserRegisterResponseDto> {
         val user = userService.createUser(dto.colorHex)
+        val token = tokenService.generateToken(user.id!!)
+        // add token to response header
+
         return ResponseEntity.ok(UserRegisterResponseDto(user.id!!))
     }
 
@@ -68,7 +73,7 @@ class UserController(
                 roomId = assignment.roomId,
                 userCount = assignment.userCount,
                 songCount = assignment.songCount,
-                currentSongUrl = assignment.currentSongUrl,
+                currentSongVideoId = assignment.currentSongVideoId,
                 currentSongStartedAt = assignment.currentSongStartedAt,
             ),
         )
@@ -139,6 +144,6 @@ data class JoinRoomResponseDto(
     val roomId: Long,
     val userCount: Int,
     val songCount: Int,
-    val currentSongUrl: String?,
+    val currentSongVideoId: String?,
     val currentSongStartedAt: LocalDateTime?,
 )

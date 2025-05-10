@@ -107,7 +107,7 @@ class UserService(
             roomId = target.id!!,
             userCount = target.userCount,
             songCount = target.songCount,
-            currentSongUrl = target.currentSong?.sourceUrl,
+            currentSongVideoId = target.currentSong?.videoId,
             currentSongStartedAt = target.currentSongStartedAt,
         )
     }
@@ -138,7 +138,7 @@ class UserService(
         val roomId: Long,
         val userCount: Int,
         val songCount: Int,
-        val currentSongUrl: String? = null,
+        val currentSongVideoId: String? = null,
         val currentSongStartedAt: LocalDateTime? = null,
     )
 }

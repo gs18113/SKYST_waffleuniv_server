@@ -40,7 +40,7 @@ class YoutubeService {
     }
 
     fun getVideIdFromUrl(url: String): String? {
-        val pattern = "(?<=youtu.be/|watch\\?v=|/videos/|embed\\/|youtu.be\\/|v\\/|e\\/|watch\\?v=|\\?v=|&v=|\\?feature=player_embedded&v=)([^#\\&\\?\\n]*)".toRegex()
+        val pattern = "(?<=youtu\\.be/|v=|/videos/|embed/|e/|\\?v=|&v=)([^#&?\\n]*)".toRegex()
         val matcher = pattern.find(url)
         return matcher?.groupValues?.getOrNull(1)
     }
