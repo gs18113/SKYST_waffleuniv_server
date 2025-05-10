@@ -39,8 +39,11 @@
             if (stompClient && stompClient.connected) {
                 // Send to your application endpoint
                 stompClient.send("/app/room/1/songrequest", {}, JSON.stringify({
-                    content: message
-                }));
+                    title: "Song Title",
+                    artist: "Artist Name",
+                    sourceUrl: message
+
+            }));
                 console.log("Message sent:", message);
             } else {
                 alert("STOMP is not connected.");
