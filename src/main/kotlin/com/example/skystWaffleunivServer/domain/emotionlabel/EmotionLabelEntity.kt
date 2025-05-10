@@ -1,4 +1,3 @@
 package com.example.skystWaffleunivServer.domain.emotionlabel
 
-class EmotionLabelEntity {
-}
+class EmotionLabelEntity

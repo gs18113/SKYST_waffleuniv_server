@@ -5,11 +5,9 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.stereotype.Service
 import java.util.Date
-import java.util.UUID
 
 @Service
 class TokenService(private val jwtConfig: JwtConfig) {
-
     fun generateToken(userId: Long): String {
         val now = Date()
         val expiryDate = Date(now.time + jwtConfig.accessTokenExpiration)
@@ -23,11 +21,12 @@ class TokenService(private val jwtConfig: JwtConfig) {
     }
 
     fun getUserIdFromToken(token: String): Long {
-        val claims = Jwts.parserBuilder()
-            .setSigningKey(Keys.hmacShaKeyFor(jwtConfig.secret.toByteArray()))
-            .build()
-            .parseClaimsJws(token)
-            .body
+        val claims =
+            Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(jwtConfig.secret.toByteArray()))
+                .build()
+                .parseClaimsJws(token)
+                .body
 
         return claims.subject.toLong()
     }
@@ -46,5 +45,4 @@ class TokenService(private val jwtConfig: JwtConfig) {
             return false
         }
     }
-
 }

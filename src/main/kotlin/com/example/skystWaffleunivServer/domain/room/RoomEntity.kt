@@ -1,4 +1,3 @@
 package com.example.skystWaffleunivServer.domain.room
 
-class RoomEntity {
-}
+class RoomEntity
