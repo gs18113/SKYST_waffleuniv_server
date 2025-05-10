@@ -39,4 +39,8 @@ class SongRequestEntity(
     var duration: Long,
     @Column(nullable = false)
     var status: String,
+    @Column(nullable = false)
+    var comment: String,
+    @Column(nullable = false)
+    var fullStory: String,
 )

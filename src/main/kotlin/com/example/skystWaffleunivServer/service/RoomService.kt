@@ -91,6 +91,8 @@ class RoomService(
                         user = user,
                         duration = duration,
                         artist = song.artist,
+                        comment = song.comment,
+                        fullStory = user.recordContent ?: "",
                     )
                 songRequestRepository.save(songRequestEntity)
                 room.songCount++

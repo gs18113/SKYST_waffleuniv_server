@@ -5,4 +5,5 @@ class SongRequestDto(
     var title: String,
     var artist: String,
     var sourceUrl: String,
+    var comment: String,
 )
