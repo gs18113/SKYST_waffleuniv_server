@@ -27,7 +27,7 @@ class RoomController(
         @AuthenticationPrincipal userId: Long,
         @RequestBody dto: RoomCreateDto,
     ): ResponseEntity<RoomCreateResponseDto> {
-        val room = roomService.createRoom(userId, dto)
+        val room = roomService.createRoom(userId)
         return ResponseEntity.ok(RoomCreateResponseDto(room.id!!))
     }
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 class UserController(
     private val userService: UserService,
     private val userRepository: UserRepository,
@@ -30,9 +30,16 @@ class UserController(
     ): ResponseEntity<UserRegisterResponseDto> {
         val user = userService.createUser(dto.colorHex)
         val token = tokenService.generateToken(user.id!!)
-        // add token to response header
 
-        return ResponseEntity.ok(UserRegisterResponseDto(user.id!!))
+        val response =
+            ResponseEntity.ok()
+                .header(
+                    "Set-Cookie",
+                    "token=$token",
+                )
+                .body(UserRegisterResponseDto(user.id!!))
+
+        return response
     }
 
     // 2) 감정 기록 작성/수정 → 내부에서 AI 분석까지 수행

@@ -4,6 +4,7 @@ import com.example.skystWaffleunivServer.domain.UserEntity
 import com.example.skystWaffleunivServer.repository.EmotionLabelRepository
 import com.example.skystWaffleunivServer.repository.RoomRepository
 import com.example.skystWaffleunivServer.repository.UserRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.lang.IllegalArgumentException
@@ -14,6 +15,7 @@ class UserService(
     private val userRepository: UserRepository,
     private val emotionLabelRepository: EmotionLabelRepository,
     private val roomRepository: RoomRepository,
+    private val roomService: RoomService,
     private val aiService: AiService,
 ) {
     @Transactional
@@ -87,15 +89,24 @@ class UserService(
         val user =
             userRepository.findById(userId)
                 .orElseThrow { IllegalArgumentException("User not found: $userId") }
+        user.label = emotionLabelRepository.findByIdOrNull(1)
         val labelId = user.label!!.id!!
 
         val rooms = roomRepository.findByLabelId(labelId)
-        if (rooms.isEmpty()) throw IllegalStateException("No rooms for label: $labelId")
+        if (rooms.isEmpty()) {
+            roomService.createRoom(user)
+        }
 
         // 가장 적은 인원 방 선택
-        val target =
+        var target =
             rooms.minByOrNull { it.userCount }
                 ?: throw IllegalStateException("No available rooms")
+
+        if (target.userCount >= 10) {
+            roomService.createRoom(user)
+            target = rooms.minByOrNull { it.userCount }
+                ?: throw IllegalStateException("No available rooms")
+        }
 
         target.userCount += 1
         roomRepository.save(target)
