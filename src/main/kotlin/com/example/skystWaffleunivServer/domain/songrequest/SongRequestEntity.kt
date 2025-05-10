@@ -1,4 +1,4 @@
 package com.example.skystWaffleunivServer.domain.songrequest
 
-class SongRequest {
+class SongRequestEntity {
 }
