@@ -84,7 +84,8 @@
 - **Frontend**: Next.js(typescript), tailwindCSS, Vercel
 - **Backend**: Spring Boot, WebSocket, Spring Data JPA  
 - **AI**: OpenAI GPT API (감정 분석)  
-- **Database**: MySQL (ERD 기반 테이블 설계) 
+- **Database**: MySQL (ERD 기반 테이블 설계)
+- **Design**: 다락방과 음악의 조화를 최대한 고려한 컬러 차트, 캐릭터 사용, 자체제작 이모지, LP 작동 UX 개선/LP 봉투 이용
 
 ---
 
