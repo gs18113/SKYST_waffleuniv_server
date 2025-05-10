@@ -44,7 +44,6 @@ class RoomService(
     }
 
     fun createRoom(user: UserEntity): RoomEntity {
-
         val room =
             RoomEntity(
                 roomName = user.label!!.name,

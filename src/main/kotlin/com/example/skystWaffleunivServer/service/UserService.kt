@@ -89,6 +89,7 @@ class UserService(
         val user =
             userRepository.findById(userId)
                 .orElseThrow { IllegalArgumentException("User not found: $userId") }
+        // TODO: !!DEBUGGING CODE!
         user.label = emotionLabelRepository.findByIdOrNull(1)
         val labelId = user.label!!.id!!
 

@@ -10,7 +10,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -22,14 +21,14 @@ class RoomController(
     private val reactionService: ReactionService,
     private val emotionLabelService: EmotionLabelService,
 ) {
-    @PostMapping
-    fun createRoom(
-        @AuthenticationPrincipal userId: Long,
-        @RequestBody dto: RoomCreateDto,
-    ): ResponseEntity<RoomCreateResponseDto> {
-        val room = roomService.createRoom(userId)
-        return ResponseEntity.ok(RoomCreateResponseDto(room.id!!))
-    }
+//    @PostMapping
+//    fun createRoom(
+//        @AuthenticationPrincipal userId: Long,
+//        @RequestBody dto: RoomCreateDto,
+//    ): ResponseEntity<RoomCreateResponseDto> {
+//        val room = roomService.createRoom(user)
+//        return ResponseEntity.ok(RoomCreateResponseDto(room.id!!))
+//    }
 
     @GetMapping
     fun getAllRooms(): ResponseEntity<List<RoomDto>> {
