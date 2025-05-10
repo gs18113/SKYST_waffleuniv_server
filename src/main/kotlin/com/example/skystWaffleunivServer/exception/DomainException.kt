@@ -8,7 +8,7 @@ open class DomainException(
     val httpErrorCode: HttpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR,
     val msg: String,
     cause: Throwable? = null,
-): RuntimeException(msg, cause) {
+) : RuntimeException(msg, cause) {
     override fun toString(): String {
         return "DomainException(msg='$msg', errorCode=$errorCode, httpErrorCode=$httpErrorCode)"
     }
